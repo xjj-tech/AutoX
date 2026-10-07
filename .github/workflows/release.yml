@@ -22,35 +22,29 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: 设置 Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: 设置 Gradle
-        uses: gradle/actions/setup-gradle@v3
+      - name: 赋予 Gradle 权限
+        run: chmod +x ./gradlew
 
       - name: 打包模版 App
-        run: |
-          chmod +x ./gradlew
-          ./gradlew app:buildTemplateApp
+        run: ./gradlew app:buildTemplateApp
 
       - name: 打包定制主程序 (assembleV6)
-        run: |
-          ./gradlew app:assembleV6 --stacktrace
+        run: ./gradlew app:assembleV6 --stacktrace
 
       - name: 对生成的 APK 进行自签名与对齐 (Zipalign + Apksigner)
         run: |
-          # 1. 生成独立的自签名 Keystore
           keytool -genkeypair -v -keystore release.jks -keyalg RSA -keysize 2048 -validity 10000 \
             -alias taskhelper -dname "CN=TaskHelper, OU=Utility, O=Android, L=City, ST=State, C=CN" \
             -storepass 123456 -keypass 123456
           
-          # 2. 定位 Android SDK Build-Tools
-          BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -mindepth 1 -maxdepth 1 | sort -V | tail -n 1)
+          BUILD_TOOLS=$ANDROID_HOME/build-tools/34.0.0
+          if [ ! -d "$BUILD_TOOLS" ]; then
+            BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -mindepth 1 -maxdepth 1 | sort -V | tail -n 1)
+          fi
           echo "Using Build Tools: $BUILD_TOOLS"
           
           mkdir -p build/app/signed
           
-          # 3. 对齐并签名所有生成的 Release APK
           for apk in app/build/outputs/apk/v6/release/*.apk; do
             if [ -f "$apk" ]; then
               base=$(basename "$apk")
