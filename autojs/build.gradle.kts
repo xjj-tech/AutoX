@@ -49,8 +49,8 @@ dependencies {
     api(libs.okhttp)
     // JDeferred
     api("org.jdeferred:jdeferred-android-aar:1.2.6")
-    // RootShell (本地打包)
-    api(files("libs/RootShell.aar"))
+    // RootShell (本地纯 Java JAR 包，完美兼容 AAR 构建)
+    api(files("libs/RootShell-1.6.jar"))
     // Gson
     api(libs.google.gson)
     // log4j
