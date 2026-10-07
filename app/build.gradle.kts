@@ -32,7 +32,7 @@ android {
         buildConfigField("boolean", "isMarket", "false")
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments["resourcePackageName"] = applicationId.toString()
+                arguments["resourcePackageName"] = "org.autojs.autoxjs"
                 arguments["androidManifestFile"] = "$projectDir/src/main/AndroidManifest.xml"
             }
         }
